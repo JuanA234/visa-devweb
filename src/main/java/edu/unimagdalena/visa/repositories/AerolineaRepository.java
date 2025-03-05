@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface AerolineaRepository extends JpaRepository<Aerolinea, Long> {
-    Optional<Aerolinea> findById(Long id);
+    Optional<Aerolinea> findAerolineaById(Long id);
     List<Aerolinea> findByNombre(String nombre);
     List<Aerolinea> findByNombreStartingWith(String inicioNombre);
     List<Aerolinea> findByNombreEndingWith(String finNombre);

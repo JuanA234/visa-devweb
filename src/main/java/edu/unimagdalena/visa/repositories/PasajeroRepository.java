@@ -11,7 +11,7 @@ public interface PasajeroRepository extends JpaRepository<Pasajero, Long> {
     List<Pasajero> findByNombre(String nombre);
     Optional<Pasajero> findByNid(String nid);
     Optional<Pasajero> findByNidAndNombre(String nid, String nombre);
-    Optional<Pasajero> findById(Long id);
+    Optional<Pasajero> findPasajeroById(Long id);
     Optional<Pasajero> findDistinctByNombre(String nombre);
 
     @Query("select p from Pasajero p where p.nombre in (?1, ?2)")
