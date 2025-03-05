@@ -14,6 +14,7 @@ public interface PasaporteRepository extends JpaRepository<Pasaporte, Long> {
     Optional<Pasaporte> findPasaporteByNumero(String numero);
     List<Pasaporte> findPasaportesByIdOrNombre(Long id, String nombre);
 
+
     // Buscar pasaportes cuyo número contenga una determinada secuencia de caracteres
     @Query("SELECT p FROM Pasaporte p WHERE p.numero LIKE %?1%")
     List<Pasaporte> findByNumeroContaining(String fragment);
@@ -26,4 +27,7 @@ public interface PasaporteRepository extends JpaRepository<Pasaporte, Long> {
 
     @Query("SELECT p FROM Pasaporte p WHERE p.numero LIKE ?1%")
     List<Pasaporte> findByNumeroStartingWith(String prefix);
+
+    @Query("SELECT p FROM Pasaporte p WHERE p.pasajero IS NOT NULL")
+    List<Pasaporte> findPasaportesWithPasajero();
 }
