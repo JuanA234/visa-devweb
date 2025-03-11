@@ -11,12 +11,11 @@ import java.util.Set;
 import java.util.UUID;
 
 public interface VueloRepository extends JpaRepository<Vuelo, Long> {
-    List<Vuelo> findVueloById(Long id);
+    Optional<Vuelo> findVueloById(Long id);
     List<Vuelo> findAllByOrderByOrigenAsc();
-    List<Vuelo> findByNumeroVuelo(UUID numeroVuelo);
-
-    Optional<Vuelo> findByOrigenStartingWith(String prefix);
-    Optional<Vuelo> findByDestinoStartingWith(String prefix);
+    Optional<Vuelo> findByNumeroVuelo(UUID numeroVuelo);
+    List<Vuelo> findByOrigenStartingWith(String prefix);
+    List<Vuelo> findByDestinoStartingWith(String prefix);
 
     @Query("SELECT v FROM Vuelo v WHERE v.origen = ?1")
     List<Vuelo> findByOrigen(String origen);
@@ -28,7 +27,7 @@ public interface VueloRepository extends JpaRepository<Vuelo, Long> {
     List<Vuelo> findByDestinoAndOrigen(String destino, String origen);
 
      @Query("SELECT v FROM Vuelo v WHERE v.destino in (?1, ?2, ?3)")
-     List<Vuelo> findByDestinoIn(Set<String> destinos);
+     List<Vuelo> findByDestinoIn(String uno, String dos, String tres);
 
     @Query("SELECT v FROM Vuelo v WHERE v.destino = ?1 OR v.origen = ?1")
     List<Vuelo> findByDestinoOrOrigen(String location);

@@ -22,7 +22,7 @@ public interface PasajeroRepository extends JpaRepository<Pasajero, Long> {
 
     // Contar cuántos pasajeros tienen un pasaporte asociado
     @Query("SELECT COUNT(p) FROM Pasajero p WHERE p.pasaporte IS NOT NULL")
-    long countPasajerosWithPasaporte();
+    Long countPasajerosWithPasaporte();
 
     @Query("SELECT p FROM Pasajero p WHERE p.reservas IS EMPTY")
     List<Pasajero> findPasajerosWithoutReservas();
