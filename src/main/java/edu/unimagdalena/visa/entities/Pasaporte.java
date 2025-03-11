@@ -1,9 +1,15 @@
 package edu.unimagdalena.visa.entities;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Data
 @Table(name="pasaportes")
 public class Pasaporte {
