@@ -10,7 +10,7 @@ import java.util.UUID;
 @Entity
 @Data
 @Table(name="vuelos")
-public class Vuelo {
+public class Vuelo{
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private UUID numeroVuelo;

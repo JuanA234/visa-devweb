@@ -12,11 +12,11 @@ import java.util.UUID;
 
 public interface VueloRepository extends JpaRepository<Vuelo, Long> {
     List<Vuelo> findVueloById(Long id);
-    List<Vuelo> findByNumeroStartingWith(String prefix);
+    List<Vuelo> findAllByOrderByOrigenAsc();
     List<Vuelo> findByNumeroVuelo(UUID numeroVuelo);
 
-    Optional<Vuelo> findByReservasEmpty(Set<Reserva> reservas);
-    Optional<Vuelo> findByReservas(Set<Reserva> reservas);
+    Optional<Vuelo> findByOrigenStartingWith(String prefix);
+    Optional<Vuelo> findByDestinoStartingWith(String prefix);
 
     @Query("SELECT v FROM Vuelo v WHERE v.origen = ?1")
     List<Vuelo> findByOrigen(String origen);

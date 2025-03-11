@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PasaporteRepository extends JpaRepository<Pasaporte, Long> {
-    List<Pasaporte> findPasaporteByNombreContainingIgnoreCase(String nombre);
-    List<Pasaporte> findDistinctByNombre(String nombre);
+    List<Pasaporte> findDistinctByNumero(String numero);
     Optional<Pasaporte> findPasaporteById(Long id);
-    Optional<Pasaporte> findPasaporteByNumero(String numero);
-    List<Pasaporte> findPasaportesByIdOrNombre(Long id, String nombre);
+    List<Pasaporte> findPasaportesByIdOrNumero(Long id, String numero);
+    List<Pasaporte> findAllByNumeroStartingWith(String prefix);
+    List<Pasaporte> findAllByNumeroContaining(String fragment);
 
 
     // Buscar pasaportes cuyo número contenga una determinada secuencia de caracteres
