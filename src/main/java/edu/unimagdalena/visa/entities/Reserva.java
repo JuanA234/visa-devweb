@@ -25,6 +25,6 @@ public class Reserva {
     private Pasajero pasajero;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "vuelo_id", nullable = false, referencedColumnName = "id")
+    @JoinColumn(name = "vuelo_id", referencedColumnName = "id", nullable = false)
     private Vuelo vuelo;
 }

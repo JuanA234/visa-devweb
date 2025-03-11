@@ -21,10 +21,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class AerolineaRepositoryTest {
-
-//    @Container
-//    public static final PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:12.4-alpine");
-
     @Autowired
     AerolineaRepository aerolineaRepository;
 
