@@ -8,6 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -86,7 +87,7 @@ class PasajeroServiceTest {
     }
 
     @Test
-    void findPasajerosWithoutReservas() {
+    void getPasajerosWithoutReservas() {
         Pasajero pasajero1 = new Pasajero(1L, "Carlos Pérez", "5678", new Pasaporte(), Set.of());
         Pasajero pasajero2 = new Pasajero(2L, "Ana Gómez", "91011", new Pasaporte(), Set.of());
         when(pasajeroRepository.findPasajerosWithoutReservas()).thenReturn(List.of(pasajero1, pasajero2));
@@ -95,5 +96,70 @@ class PasajeroServiceTest {
 
         assertEquals(2, pasajeros.size());
         verify(pasajeroRepository, times(1)).findPasajerosWithoutReservas();
+    }
+
+    @Test
+    void getPasajeroByNidAndNombre() {
+        Pasajero pasajero = Pasajero.builder().nid("777").nombre("Marcos").build();
+        when(pasajeroRepository.findByNidAndNombre("777", "Marcos")).thenReturn(Optional.of(pasajero));
+
+        Optional<Pasajero> foundPasajero = pasajeroService.getPasajeroByNidAndNombre("777", "Marcos");
+        assertTrue(foundPasajero.isPresent());
+        assertEquals("777", foundPasajero.get().getNid());
+        assertEquals("Marcos", foundPasajero.get().getNombre());
+        verify(pasajeroRepository, times(1)).findByNidAndNombre("777", "Marcos");
+    }
+
+    @Test
+    void getPasajeroDistintByNombre() {
+        Pasajero pasajero = Pasajero.builder().nombre("Marcos").build();
+        when(pasajeroRepository.findDistinctByNombre("Marcos")).thenReturn(Optional.of(pasajero));
+
+        Optional<Pasajero> foundPasajero = pasajeroService.getPasajeroDistintByNombre("Marcos");
+        assertTrue(foundPasajero.isPresent());
+        assertEquals("Marcos", foundPasajero.get().getNombre());
+        verify(pasajeroRepository, times(1)).findDistinctByNombre("Marcos");
+    }
+
+    @Test
+    void getPasajerosConNombres() {
+        Pasajero pasajero1 = Pasajero.builder().nombre("Juan").build();
+        Pasajero pasajero2 = Pasajero.builder().nombre("Pedro").build();
+        when(pasajeroRepository.findPasajerosConNombres("Juan", "Pedro")).thenReturn(List.of(pasajero1, pasajero2));
+
+        List<Pasajero> pasajeros = pasajeroService.getPasajerosConNombres("Juan", "Pedro");
+
+        assertFalse(pasajeros.isEmpty());
+        List<String> nombres = Arrays.asList("Juan", "Pedro");
+        assertTrue(nombres.contains(pasajeros.get(0).getNombre()));
+        verify(pasajeroRepository, times(1)).findPasajerosConNombres("Juan", "Pedro");
+    }
+
+    @Test
+    void getPasajeroByNombreStartingWith() {
+        Pasajero pasajero1 = Pasajero.builder().nombre("Juan").build();
+        Pasajero pasajero2 = Pasajero.builder().nombre("Julian").build();
+        when(pasajeroRepository.findByNombreStartingWith("Ju")).thenReturn(List.of(pasajero1, pasajero2));
+
+        List<Pasajero> pasajeros = pasajeroService.getPasajeroByNombreStartingWith("Ju");
+
+        assertFalse(pasajeros.isEmpty());
+        List<String> nombres = Arrays.asList("Juan", "Julian");
+        assertTrue(nombres.contains(pasajeros.get(0).getNombre()));
+        verify(pasajeroRepository, times(1)).findByNombreStartingWith("Ju");
+    }
+
+    @Test
+    void getPasajeroByNombreContainingIgnoreCase() {
+        Pasajero pasajero1 = Pasajero.builder().nombre("Juan").build();
+        Pasajero pasajero2 = Pasajero.builder().nombre("Juancho").build();
+        when(pasajeroRepository.findByNombreContainingIgnoreCase("uan")).thenReturn(List.of(pasajero1, pasajero2));
+
+        List<Pasajero> pasajeros = pasajeroService.getPasajeroByNombreContainingIgnoreCase("uan");
+
+        assertFalse(pasajeros.isEmpty());
+        List<String> nombres = Arrays.asList("Juan", "Juancho");
+        assertTrue(nombres.contains(pasajeros.get(0).getNombre()));
+        verify(pasajeroRepository, times(1)).findByNombreContainingIgnoreCase("uan");
     }
 }
