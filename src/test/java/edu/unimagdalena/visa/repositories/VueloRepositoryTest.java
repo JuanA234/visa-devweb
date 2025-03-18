@@ -45,6 +45,7 @@ class VueloRepositoryTest {
         assertEquals(vuelo2.getOrigen(), vuelos.get(2).getOrigen());
     }
 
+
     @Test
     void findByNumeroVuelo() {
         UUID numeroVuelo = UUID.randomUUID();
