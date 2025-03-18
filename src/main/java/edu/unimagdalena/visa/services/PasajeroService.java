@@ -37,7 +37,7 @@ public class PasajeroService {
         return pasajeroRepository.countPasajerosWithPasaporte();
     }
 
-    public List<Pasajero> findPasajerosWithoutReservas(){
+    public List<Pasajero> getPasajerosWithoutReservas(){
         return pasajeroRepository.findPasajerosWithoutReservas();
     }
 }
