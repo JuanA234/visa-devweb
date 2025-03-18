@@ -1,4 +1,4 @@
-package edu.unimagdalena.visa.controller;
+package edu.unimagdalena.visa.controllers;
 
 
 import edu.unimagdalena.visa.entities.Pasajero;

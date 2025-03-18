@@ -8,10 +8,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PasajeroRepository extends JpaRepository<Pasajero, Long> {
+    Optional<Pasajero> findPasajeroById(Long id);
     List<Pasajero> findByNombre(String nombre);
     Optional<Pasajero> findByNid(String nid);
     Optional<Pasajero> findByNidAndNombre(String nid, String nombre);
-    Optional<Pasajero> findPasajeroById(Long id);
     Optional<Pasajero> findDistinctByNombre(String nombre);
 
     @Query("select p from Pasajero p where p.nombre in (?1, ?2)")

@@ -33,11 +33,31 @@ public class PasajeroService {
         return pasajeroRepository.findByNid(nid);
     }
 
+    public Optional<Pasajero> getPasajeroByNidAndNombre(String nid, String nombre){
+        return pasajeroRepository.findByNidAndNombre(nid, nombre);
+    }
+
+    public Optional<Pasajero> getPasajeroDistintByNombre(String nombre){
+        return  pasajeroRepository.findDistinctByNombre(nombre);
+    }
+
+    public List<Pasajero> getPasajerosConNombres(String nombre1, String nombre2){
+        return pasajeroRepository.findPasajerosConNombres(nombre1, nombre2);
+    }
+
+    public List<Pasajero> getPasajeroByNombreStartingWith(String prefix){
+        return pasajeroRepository.findByNombreStartingWith(prefix);
+    }
+
     public Long countPasajerosWithPasaporte(){
         return pasajeroRepository.countPasajerosWithPasaporte();
     }
 
     public List<Pasajero> findPasajerosWithoutReservas(){
         return pasajeroRepository.findPasajerosWithoutReservas();
+    }
+
+    public List<Pasajero> getPasajeroByNombreContainingIgnoreCase(String fragment){
+        return pasajeroRepository.findByNombreContainingIgnoreCase(fragment);
     }
 }
