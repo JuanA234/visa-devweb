@@ -1,7 +1,10 @@
-package edu.unimagdalena.visa.services;
+package edu.unimagdalena.visa.services.impl;
 
+import edu.unimagdalena.visa.dto.PasajeroDTO;
+import edu.unimagdalena.visa.dto.mappers.PasajeroMapper;
 import edu.unimagdalena.visa.entities.Pasajero;
 import edu.unimagdalena.visa.repositories.PasajeroRepository;
+import edu.unimagdalena.visa.services.interfaces.PasajeroService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -9,20 +12,24 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class PasajeroService {
+public class PasajeroServiceImpl implements PasajeroService {
     private final PasajeroRepository pasajeroRepository;
+    private final PasajeroMapper pasajeroMapper;
 
     @Autowired
-    public PasajeroService(PasajeroRepository pasajeroRepository){
+    public PasajeroServiceImpl(PasajeroRepository pasajeroRepository, PasajeroMapper pasajeroMapper){
         this.pasajeroRepository = pasajeroRepository;
+        this.pasajeroMapper = pasajeroMapper;
     }
 
     public Pasajero createPasajero(Pasajero pasajero){
         return pasajeroRepository.save(pasajero);
     }
 
-    public Optional<Pasajero> getPasajeroById(Long id){
-        return pasajeroRepository.findPasajeroById(id);
+    public Optional<PasajeroDTO> getPasajeroById(Long id){
+        Optional<Pasajero> pasajero = pasajeroRepository.findPasajeroById(id);
+        Optional<PasajeroDTO> dto = pasajero.map(pasajeroMapper::pasajeroToDTO);
+        return dto;
     }
 
     public List<Pasajero> getPasajerosByNombre(String nombre){

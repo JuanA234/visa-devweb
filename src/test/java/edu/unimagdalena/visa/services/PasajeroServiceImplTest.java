@@ -1,8 +1,11 @@
 package edu.unimagdalena.visa.services;
 
+import edu.unimagdalena.visa.dto.PasajeroDTO;
+import edu.unimagdalena.visa.dto.mappers.PasajeroMapper;
 import edu.unimagdalena.visa.entities.Pasajero;
 import edu.unimagdalena.visa.entities.Pasaporte;
 import edu.unimagdalena.visa.repositories.PasajeroRepository;
+import edu.unimagdalena.visa.services.impl.PasajeroServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -16,15 +19,18 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class PasajeroServiceTest {
+class PasajeroServiceImplTest {
 
     @Mock
     private PasajeroRepository pasajeroRepository;
 
-    @InjectMocks
-    private PasajeroService pasajeroService;
+    @Mock
+    private PasajeroMapper pasajeroMapper;
 
-    public PasajeroServiceTest() {
+    @InjectMocks
+    private PasajeroServiceImpl pasajeroService;
+
+    public PasajeroServiceImplTest() {
         MockitoAnnotations.openMocks(this);
     }
 
@@ -44,13 +50,16 @@ class PasajeroServiceTest {
 
     @Test
     void getPasajeroById() {
-        Pasajero pasajero = new Pasajero(1L,"Juan Avendaño","1234", new Pasaporte(), null);
+        Pasajero pasajero = Pasajero.builder().id(1L).nombre("Juan Avendaño").nid("23rg").build();
         when(pasajeroRepository.findPasajeroById(1L)).thenReturn(Optional.of(pasajero));
+        when(pasajeroMapper.pasajeroToDTO(pasajero))
+                .thenReturn(new PasajeroDTO( "Juan Avendaño", "23rg"));
 
-        Optional<Pasajero> foundPasajero = pasajeroService.getPasajeroById(1L);
+
+        Optional<PasajeroDTO> foundPasajero = pasajeroService.getPasajeroById(1L);
 
         assertTrue(foundPasajero.isPresent());
-        assertEquals("Juan Avendaño", foundPasajero.get().getNombre());
+        assertEquals("Juan Avendaño", foundPasajero.get().nombre());
         verify(pasajeroRepository, times(1)).findPasajeroById(1L);
     }
 

@@ -1,8 +1,9 @@
 package edu.unimagdalena.visa.controllers;
 
 
+import edu.unimagdalena.visa.dto.PasajeroDTO;
 import edu.unimagdalena.visa.entities.Pasajero;
-import edu.unimagdalena.visa.services.PasajeroService;
+import edu.unimagdalena.visa.services.impl.PasajeroServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,10 +15,10 @@ import java.util.Optional;
 @RequestMapping("/pasajeros")
 public class PasajeroController {
 
-    private final PasajeroService pasajeroService;
+    private final PasajeroServiceImpl pasajeroService;
 
     @Autowired
-    public PasajeroController(PasajeroService pasajeroService){
+    public PasajeroController(PasajeroServiceImpl pasajeroService){
         this.pasajeroService = pasajeroService;
     }
 
@@ -28,8 +29,8 @@ public class PasajeroController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Pasajero> getPasajeroById(@PathVariable Long id){
-        Optional<Pasajero> pasajero = pasajeroService.getPasajeroById(id);
+    public ResponseEntity<PasajeroDTO> getPasajeroById(@PathVariable Long id){
+        Optional<PasajeroDTO> pasajero = pasajeroService.getPasajeroById(id);
         return pasajero.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
