@@ -1,5 +1,6 @@
 package edu.unimagdalena.visa.service.impl;
 
+import edu.unimagdalena.visa.dto.Pasajero.RequestPasajeroDTO;
 import edu.unimagdalena.visa.dto.Pasajero.ResponsePasajeroDTO;
 import edu.unimagdalena.visa.mappers.PasajeroMapper;
 import edu.unimagdalena.visa.model.Pasajero;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PasajeroServiceImpl implements PasajeroService {
@@ -22,8 +24,10 @@ public class PasajeroServiceImpl implements PasajeroService {
         this.pasajeroMapper = pasajeroMapper;
     }
 
-    public Pasajero createPasajero(Pasajero pasajero){
-        return pasajeroRepository.save(pasajero);
+    public ResponsePasajeroDTO createPasajero(RequestPasajeroDTO dto){
+        Pasajero pasajero = pasajeroMapper.dtoToPasajero(dto);
+        Pasajero pasajeroCreated = pasajeroRepository.save(pasajero);
+        return pasajeroMapper.pasajeroToDTO(pasajeroCreated);
     }
 
     public Optional<ResponsePasajeroDTO> getPasajeroById(Long id){
@@ -32,39 +36,39 @@ public class PasajeroServiceImpl implements PasajeroService {
         return dto;
     }
 
-    public List<Pasajero> getPasajerosByNombre(String nombre){
-        return pasajeroRepository.findByNombre(nombre);
+    public List<ResponsePasajeroDTO> getPasajerosByNombre(String nombre){
+        return pasajeroMapper.toListDTO(pasajeroRepository.findByNombre(nombre));
     }
 
-    public Optional<Pasajero> getPasajeroByNid(String nid){
-        return pasajeroRepository.findByNid(nid);
+    public Optional<ResponsePasajeroDTO> getPasajeroByNid(String nid){
+        return pasajeroRepository.findByNid(nid).map(pasajeroMapper::pasajeroToDTO);
     }
 
-    public Optional<Pasajero> getPasajeroByNidAndNombre(String nid, String nombre){
-        return pasajeroRepository.findByNidAndNombre(nid, nombre);
+    public Optional<ResponsePasajeroDTO> getPasajeroByNidAndNombre(String nid, String nombre){
+        return pasajeroRepository.findByNidAndNombre(nid, nombre).map(pasajeroMapper::pasajeroToDTO);
     }
 
-    public Optional<Pasajero> getPasajeroDistintByNombre(String nombre){
-        return  pasajeroRepository.findDistinctByNombre(nombre);
+    public Optional<ResponsePasajeroDTO> getPasajeroDistintByNombre(String nombre){
+        return  pasajeroRepository.findDistinctByNombre(nombre).map(pasajeroMapper::pasajeroToDTO);
     }
 
-    public List<Pasajero> getPasajerosConNombres(String nombre1, String nombre2){
-        return pasajeroRepository.findPasajerosConNombres(nombre1, nombre2);
+    public List<ResponsePasajeroDTO> getPasajerosConNombres(String nombre1, String nombre2){
+        return pasajeroMapper.toListDTO(pasajeroRepository.findPasajerosConNombres(nombre1, nombre2));
     }
 
-    public List<Pasajero> getPasajeroByNombreStartingWith(String prefix){
-        return pasajeroRepository.findByNombreStartingWith(prefix);
+    public List<ResponsePasajeroDTO> getPasajeroByNombreStartingWith(String prefix){
+        return pasajeroMapper.toListDTO(pasajeroRepository.findByNombreStartingWith(prefix));
     }
 
     public Long countPasajerosWithPasaporte(){
         return pasajeroRepository.countPasajerosWithPasaporte();
     }
 
-    public List<Pasajero> getPasajerosWithoutReservas(){
-        return pasajeroRepository.findPasajerosWithoutReservas();
+    public List<ResponsePasajeroDTO> getPasajerosWithoutReservas() {
+        return pasajeroMapper.toListDTO(pasajeroRepository.findPasajerosWithoutReservas());
     }
 
-    public List<Pasajero> getPasajeroByNombreContainingIgnoreCase(String fragment){
-        return pasajeroRepository.findByNombreContainingIgnoreCase(fragment);
+    public List<ResponsePasajeroDTO> getPasajeroByNombreContainingIgnoreCase(String fragment){
+        return pasajeroMapper.toListDTO(pasajeroRepository.findByNombreContainingIgnoreCase(fragment));
     }
 }

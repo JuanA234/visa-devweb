@@ -22,11 +22,11 @@ public class PasajeroController {
         this.pasajeroService = pasajeroService;
     }
 
-    @PostMapping
-    public ResponseEntity<Pasajero> createPasajero(@RequestBody Pasajero pasajero){
-        Pasajero createdPasajero = pasajeroService.createPasajero(pasajero);
-        return new ResponseEntity<>(createdPasajero, HttpStatus.CREATED);
-    }
+//    @PostMapping
+//    public ResponseEntity<Pasajero> createPasajero(@RequestBody Pasajero pasajero){
+//        Pasajero createdPasajero = pasajeroService.createPasajero(pasajero);
+//        return new ResponseEntity<>(createdPasajero, HttpStatus.CREATED);
+//    }
 
     @GetMapping("/{id}")
     public ResponseEntity<ResponsePasajeroDTO> getPasajeroById(@PathVariable Long id){

@@ -1,5 +1,6 @@
 package edu.unimagdalena.visa.service;
 
+import edu.unimagdalena.visa.dto.Pasajero.RequestPasajeroDTO;
 import edu.unimagdalena.visa.dto.Pasajero.ResponsePasajeroDTO;
 import edu.unimagdalena.visa.mappers.PasajeroMapper;
 import edu.unimagdalena.visa.model.Pasajero;
@@ -36,14 +37,19 @@ class PasajeroServiceImplTest {
 
     @Test
     void createPasajero() {
-        Pasajero pasajero = new Pasajero(null,"Juan Avendaño","1234", new Pasaporte(), null);
-        when(pasajeroRepository.save(any(Pasajero.class))).thenReturn(new Pasajero(1L ,"Juan Avendaño","1234", new Pasaporte(), null));
+        Pasajero pasajero = Pasajero.builder().nombre("Juan Avendaño").nid("1234").build();
+        RequestPasajeroDTO requestPasajeroDTO = new RequestPasajeroDTO("Juan Avendaño", "1234");
+        ResponsePasajeroDTO responsePasajeroDTO = new ResponsePasajeroDTO("Juan Avendaño", "1234");
 
-        Pasajero createdPasajero = pasajeroService.createPasajero(pasajero);
+        when(pasajeroRepository.save(any(Pasajero.class))).thenReturn(pasajero);
+        when(pasajeroMapper.pasajeroToDTO(pasajero)).thenReturn(responsePasajeroDTO);
+        when(pasajeroMapper.dtoToPasajero(requestPasajeroDTO)).thenReturn(pasajero);
 
-        assertNotNull(createdPasajero.getId());
-        assertEquals("Juan Avendaño", createdPasajero.getNombre());
-        assertEquals("1234", createdPasajero.getNid());
+        ResponsePasajeroDTO createdPasajero = pasajeroService.createPasajero(requestPasajeroDTO);
+
+        assertNotNull(createdPasajero);
+        assertEquals("Juan Avendaño", createdPasajero.nombre());
+        assertEquals("1234", createdPasajero.nid());
         verify(pasajeroRepository, times(1)).save(pasajero);
     }
 
@@ -65,26 +71,34 @@ class PasajeroServiceImplTest {
 
     @Test
     void getPasajerosByNombre() {
-        Pasajero pasajero = Pasajero.builder().nombre("Juan").build();
-        when(pasajeroRepository.findByNombre("Juan")).thenReturn(List.of(pasajero));
+        String nombre = "Juan";
+        Pasajero pasajero = Pasajero.builder().nombre(nombre).build();
+        ResponsePasajeroDTO pasajeroDTO = new ResponsePasajeroDTO(nombre, null);
 
-        List<Pasajero> foundPasajeros = pasajeroService.getPasajerosByNombre("Juan");
+        when(pasajeroRepository.findByNombre(nombre)).thenReturn(List.of(pasajero));
+        when(pasajeroMapper.toListDTO(List.of(pasajero))).thenReturn(List.of(pasajeroDTO));
+
+        List<ResponsePasajeroDTO> foundPasajeros = pasajeroService.getPasajerosByNombre(nombre);
 
         assertFalse(foundPasajeros.isEmpty());
-        assertEquals("Juan", foundPasajeros.get(0).getNombre());
-        verify(pasajeroRepository, times(1)).findByNombre("Juan");
+        verify(pasajeroRepository, times(1)).findByNombre(nombre);
     }
 
     @Test
     void getPasajeroByNid() {
-        Pasajero pasajero = new Pasajero(1L, "Juan Avendaño", "1234", new Pasaporte(), null);
-        when(pasajeroRepository.findByNid("1234")).thenReturn(Optional.of(pasajero));
+        String nombre = "Juan Avendaño";
+        String nid = "1234";
 
-        Optional<Pasajero> foundPasajero = pasajeroService.getPasajeroByNid("1234");
+        Pasajero pasajero = new Pasajero(1L, nombre, nid, new Pasaporte(), null);
+        ResponsePasajeroDTO pasajeroDTO = new ResponsePasajeroDTO(nombre, nid);
 
+        when(pasajeroRepository.findByNid(nid)).thenReturn(Optional.of(pasajero));
+        when(pasajeroMapper.pasajeroToDTO(pasajero))
+                .thenReturn(pasajeroDTO);
+
+        Optional<ResponsePasajeroDTO> foundPasajero = pasajeroService.getPasajeroByNid(nid);
         assertTrue(foundPasajero.isPresent());
-        assertEquals("1234", foundPasajero.get().getNid());
-        verify(pasajeroRepository, times(1)).findByNid("1234");
+        verify(pasajeroRepository, times(1)).findByNid(nid);
     }
 
     @Test
@@ -99,34 +113,48 @@ class PasajeroServiceImplTest {
     void getPasajerosWithoutReservas() {
         Pasajero pasajero1 = new Pasajero(1L, "Carlos Pérez", "5678", new Pasaporte(), Set.of());
         Pasajero pasajero2 = new Pasajero(2L, "Ana Gómez", "91011", new Pasaporte(), Set.of());
-        when(pasajeroRepository.findPasajerosWithoutReservas()).thenReturn(List.of(pasajero1, pasajero2));
 
-        List<Pasajero> pasajeros = pasajeroService.getPasajerosWithoutReservas();
+        ResponsePasajeroDTO pasajeroDTO1 = new ResponsePasajeroDTO("Carlos Pérez", "5678");
+        ResponsePasajeroDTO pasajeroDTO2 = new ResponsePasajeroDTO("Ana Gómez", "91011");
+
+        when(pasajeroRepository.findPasajerosWithoutReservas()).thenReturn(List.of(pasajero1, pasajero2));
+        when(pasajeroMapper.toListDTO(List.of(pasajero1, pasajero2))).thenReturn(List.of(pasajeroDTO1, pasajeroDTO2));
+
+        List<ResponsePasajeroDTO> pasajeros = pasajeroService.getPasajerosWithoutReservas();
 
         assertEquals(2, pasajeros.size());
+        assertEquals("Carlos Pérez", pasajeros.get(0).nombre());
         verify(pasajeroRepository, times(1)).findPasajerosWithoutReservas();
     }
 
     @Test
     void getPasajeroByNidAndNombre() {
-        Pasajero pasajero = Pasajero.builder().nid("777").nombre("Marcos").build();
-        when(pasajeroRepository.findByNidAndNombre("777", "Marcos")).thenReturn(Optional.of(pasajero));
 
-        Optional<Pasajero> foundPasajero = pasajeroService.getPasajeroByNidAndNombre("777", "Marcos");
+        Pasajero pasajero = Pasajero.builder().nid("777").nombre("Marcos").build();
+        ResponsePasajeroDTO pasajeroDTO = new ResponsePasajeroDTO("Marcos", "777");
+
+        when(pasajeroRepository.findByNidAndNombre("777", "Marcos")).thenReturn(Optional.of(pasajero));
+        when(pasajeroMapper.pasajeroToDTO(pasajero)).thenReturn(pasajeroDTO);
+
+        Optional<ResponsePasajeroDTO> foundPasajero = pasajeroService.getPasajeroByNidAndNombre("777", "Marcos");
         assertTrue(foundPasajero.isPresent());
-        assertEquals("777", foundPasajero.get().getNid());
-        assertEquals("Marcos", foundPasajero.get().getNombre());
+        assertEquals("777", foundPasajero.get().nid());
+        assertEquals("Marcos", foundPasajero.get().nombre());
         verify(pasajeroRepository, times(1)).findByNidAndNombre("777", "Marcos");
     }
 
     @Test
     void getPasajeroDistintByNombre() {
         Pasajero pasajero = Pasajero.builder().nombre("Marcos").build();
-        when(pasajeroRepository.findDistinctByNombre("Marcos")).thenReturn(Optional.of(pasajero));
+        ResponsePasajeroDTO pasajeroDTO = new ResponsePasajeroDTO("Marcos", "777");
 
-        Optional<Pasajero> foundPasajero = pasajeroService.getPasajeroDistintByNombre("Marcos");
+        when(pasajeroRepository.findDistinctByNombre("Marcos")).thenReturn(Optional.of(pasajero));
+        when(pasajeroMapper.pasajeroToDTO(pasajero)).thenReturn(pasajeroDTO);
+
+        Optional<ResponsePasajeroDTO> foundPasajero = pasajeroService.getPasajeroDistintByNombre("Marcos");
+
         assertTrue(foundPasajero.isPresent());
-        assertEquals("Marcos", foundPasajero.get().getNombre());
+        assertEquals("Marcos", foundPasajero.get().nombre());
         verify(pasajeroRepository, times(1)).findDistinctByNombre("Marcos");
     }
 
@@ -134,13 +162,22 @@ class PasajeroServiceImplTest {
     void getPasajerosConNombres() {
         Pasajero pasajero1 = Pasajero.builder().nombre("Juan").build();
         Pasajero pasajero2 = Pasajero.builder().nombre("Pedro").build();
+
+        List<Pasajero> pasajeros = List.of(pasajero1, pasajero2);
+
+        ResponsePasajeroDTO pasajeroDTO1 = new ResponsePasajeroDTO("Juan", null);
+        ResponsePasajeroDTO pasajeroDTO2 = new ResponsePasajeroDTO("Pedro", null);
+
+        List<ResponsePasajeroDTO> pasajerosDtos = List.of(pasajeroDTO1, pasajeroDTO2);
+
         when(pasajeroRepository.findPasajerosConNombres("Juan", "Pedro")).thenReturn(List.of(pasajero1, pasajero2));
+        when(pasajeroMapper.toListDTO(pasajeros)).thenReturn(pasajerosDtos);
 
-        List<Pasajero> pasajeros = pasajeroService.getPasajerosConNombres("Juan", "Pedro");
+        List<ResponsePasajeroDTO> responsePasajeroDTOList = pasajeroService.getPasajerosConNombres("Juan", "Pedro");
 
-        assertFalse(pasajeros.isEmpty());
+        assertFalse(responsePasajeroDTOList.isEmpty());
         List<String> nombres = Arrays.asList("Juan", "Pedro");
-        assertTrue(nombres.contains(pasajeros.get(0).getNombre()));
+        assertTrue(nombres.contains(responsePasajeroDTOList.get(0).nombre()));
         verify(pasajeroRepository, times(1)).findPasajerosConNombres("Juan", "Pedro");
     }
 
@@ -148,13 +185,18 @@ class PasajeroServiceImplTest {
     void getPasajeroByNombreStartingWith() {
         Pasajero pasajero1 = Pasajero.builder().nombre("Juan").build();
         Pasajero pasajero2 = Pasajero.builder().nombre("Julian").build();
-        when(pasajeroRepository.findByNombreStartingWith("Ju")).thenReturn(List.of(pasajero1, pasajero2));
 
-        List<Pasajero> pasajeros = pasajeroService.getPasajeroByNombreStartingWith("Ju");
+        ResponsePasajeroDTO pasajeroDTO1 = new ResponsePasajeroDTO("Juan", null);
+        ResponsePasajeroDTO pasajeroDTO2 = new ResponsePasajeroDTO("Julian", null);
+
+        when(pasajeroRepository.findByNombreStartingWith("Ju")).thenReturn(List.of(pasajero1, pasajero2));
+        when(pasajeroMapper.toListDTO(List.of(pasajero1, pasajero2))).thenReturn(List.of(pasajeroDTO1, pasajeroDTO2));
+
+        List<ResponsePasajeroDTO> pasajeros = pasajeroService.getPasajeroByNombreStartingWith("Ju");
 
         assertFalse(pasajeros.isEmpty());
         List<String> nombres = Arrays.asList("Juan", "Julian");
-        assertTrue(nombres.contains(pasajeros.get(0).getNombre()));
+        assertTrue(nombres.contains(pasajeros.get(0).nombre()));
         verify(pasajeroRepository, times(1)).findByNombreStartingWith("Ju");
     }
 
@@ -162,13 +204,20 @@ class PasajeroServiceImplTest {
     void getPasajeroByNombreContainingIgnoreCase() {
         Pasajero pasajero1 = Pasajero.builder().nombre("Juan").build();
         Pasajero pasajero2 = Pasajero.builder().nombre("Juancho").build();
-        when(pasajeroRepository.findByNombreContainingIgnoreCase("uan")).thenReturn(List.of(pasajero1, pasajero2));
 
-        List<Pasajero> pasajeros = pasajeroService.getPasajeroByNombreContainingIgnoreCase("uan");
+        ResponsePasajeroDTO pasajeroDTO1 = new ResponsePasajeroDTO("Juan", null);
+        ResponsePasajeroDTO pasajeroDTO2 = new ResponsePasajeroDTO("Juancho", null);
+
+
+
+        when(pasajeroRepository.findByNombreContainingIgnoreCase("uan")).thenReturn(List.of(pasajero1, pasajero2));
+        when(pasajeroMapper.toListDTO(List.of(pasajero1, pasajero2))).thenReturn(List.of(pasajeroDTO1, pasajeroDTO2));
+
+        List<ResponsePasajeroDTO> pasajeros = pasajeroService.getPasajeroByNombreContainingIgnoreCase("uan");
 
         assertFalse(pasajeros.isEmpty());
         List<String> nombres = Arrays.asList("Juan", "Juancho");
-        assertTrue(nombres.contains(pasajeros.get(0).getNombre()));
+        assertTrue(nombres.contains(pasajeros.get(0).nombre()));
         verify(pasajeroRepository, times(1)).findByNombreContainingIgnoreCase("uan");
     }
 }
